@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:tictactoe/pages/enter_name_page.dart';
@@ -44,6 +45,8 @@ class _GamePageState extends State<GamePage> {
       _currentPlayer = 'X';
       _winner = '';
       _gameOver = false;
+      final player = AudioCache();
+      player.play('comedy_pop_finger_in_mouth_001.mp3');
     });
   }
 
@@ -51,6 +54,8 @@ class _GamePageState extends State<GamePage> {
     if (_board[row][col] != '' || _gameOver) {
       return;
     }
+    final player = AudioCache();
+    player.play('comedy_pop_finger_in_mouth_001.mp3');
     setState(() {
       _board[row][col] = _currentPlayer;
       // check for winner
@@ -100,8 +105,12 @@ class _GamePageState extends State<GamePage> {
         ).show();
         if (_winner == 'X') {
           scoreP1++;
+          final player = AudioCache();
+          player.play('winnerchickendinner.mp3');
         } else if (_winner == 'O') {
           scoreP2++;
+          final player = AudioCache();
+          player.play('winnerchickendinner.mp3');
         }
       }
     });
@@ -235,7 +244,9 @@ class _GamePageState extends State<GamePage> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         padding: const EdgeInsets.symmetric(
-                            vertical: 18, horizontal: 20),
+                          vertical: 18,
+                          horizontal: 20,
+                        ),
                         child: Text(
                           'Reset Game',
                           style: miniFontStyle,
@@ -255,6 +266,8 @@ class _GamePageState extends State<GamePage> {
                             MaterialPageRoute(
                                 builder: (context) => const EnterNamePage()),
                           );
+                          final player = AudioCache();
+                          player.play('comedy_pop_finger_in_mouth_001.mp3');
                         },
                         child: const Text(
                           '<--- Back',

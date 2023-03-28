@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:tictactoe/pages/game_page.dart';
 
@@ -94,6 +95,8 @@ class _EnterNamePageState extends State<EnterNamePage> {
                         builder: (context) => GamePage(
                             nameP1: _nameP1.text, nameP2: _nameP2.text)),
                   );
+                  final player = AudioCache();
+                  player.play('comedy_pop_finger_in_mouth_001.mp3');
                 },
                 child: const Text(
                   "let's go",
@@ -119,14 +122,3 @@ class _EnterNamePageState extends State<EnterNamePage> {
     );
   }
 }
-
-/*
-decoration: const InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(),
-                    labelText: 'Enter Name',
-                  ),
-                  maxLines: 1,
-                  maxLength: 12,
- */

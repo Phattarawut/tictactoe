@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:audioplayers/audioplayers.dart';
 import 'enter_name_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -43,17 +43,19 @@ class _HomePageState extends State<HomePage> {
               color: Colors.white,
             ),
             ElevatedButton(
+              child: const Text(
+                'START',
+                style: TextStyle(fontSize: 20, fontFamily: 'FredokaOne'),
+              ),
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => const EnterNamePage()),
                 );
+                final player = AudioCache();
+                player.play('comedy_pop_finger_in_mouth_001.mp3');
               },
-              child: const Text(
-                'START',
-                style: TextStyle(fontSize: 20, fontFamily: 'FredokaOne'),
-              ),
             )
           ],
         ),
