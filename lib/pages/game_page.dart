@@ -51,15 +51,15 @@ class _GamePageState extends State<GamePage> {
   }
 
   void _makeMove(int row, int col) {
-  if (_board[row][col] != '' || _gameOver) {
-    return;
-  }
+    if (_board[row][col] != '' || _gameOver) {
+      return;
+    }
 
-  final player = AudioCache();
-  player.play('comedy_pop_finger_in_mouth_001.mp3');
+    final player = AudioCache();
+    player.play('comedy_pop_finger_in_mouth_001.mp3');
 
-  setState(() {
-    _board[row][col] = _currentPlayer;
+    setState(() {
+      _board[row][col] = _currentPlayer;
 
     // check for a win
     if ((_board[row][0] == _currentPlayer &&
@@ -102,19 +102,19 @@ class _GamePageState extends State<GamePage> {
         },
       ).show();
 
-      if (_winner == 'X') {
-        scoreP1++;
-        player.play('winnerchickendinner.mp3');
-      } else if (_winner == 'O') {
-        scoreP2++;
-        player.play('winnerchickendinner.mp3');
+        if (_winner == 'X') {
+          scoreP1++;
+          player.play('winnerchickendinner.mp3');
+        } else if (_winner == 'O') {
+          scoreP2++;
+          player.play('winnerchickendinner.mp3');
+        }
+      } else {
+        // switch player
+        _currentPlayer = _currentPlayer == 'X' ? 'O' : 'X';
       }
-    } else {
-      // switch player
-      _currentPlayer = _currentPlayer == 'X' ? 'O' : 'X';
-    }
-  });
-}
+    });
+  }
 
 
   @override
