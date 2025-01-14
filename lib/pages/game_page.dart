@@ -51,70 +51,85 @@ class _GamePageState extends State<GamePage> {
   }
 
   void _makeMove(int row, int col) {
-    if (_board[row][col] != '' || _gameOver) {
+  if (_board[row][col] != '' || _gameOver) {
+    return;
+  }
+
+  final player = AudioCache();
+  player.play('comedy_pop_finger_in_mouth_001.mp3');
+
+  setState(() {
+    _board[row][col] = _currentPlayer;
+
+    // Check for winner
+    if (_board[row][0] == _currentPlayer &&
+        _board[row][1] == _currentPlayer &&
+        _board[row][2] == _currentPlayer) {
+      _winner = _currentPlayer;
+      _gameOver = true;
+    } else if (_board[0][col] == _currentPlayer &&
+        _board[1][col] == _currentPlayer &&
+        _board[2][col] == _currentPlayer) {
+      _winner = _currentPlayer;
+      _gameOver = true;
+    } else if (_board[0][0] == _currentPlayer &&
+        _board[1][1] == _currentPlayer &&
+        _board[2][2] == _currentPlayer) {
+      _winner = _currentPlayer;
+      _gameOver = true;
+    } else if (_board[0][2] == _currentPlayer &&
+        _board[1][1] == _currentPlayer &&
+        _board[2][0] == _currentPlayer) {
+      _winner = _currentPlayer;
+      _gameOver = true;
+    }
+
+    // If there is a winner, show dialog
+    if (_winner != '') {
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.rightSlide,
+        btnOkText: 'Play Again',
+        title: _winner == 'X'
+            ? '${widget.nameP1} Won!'
+            : '${widget.nameP2} Won!',
+        btnOkOnPress: () {
+          _resetGame();
+        },
+      ).show();
+
+      if (_winner == 'X') {
+        scoreP1++;
+        player.play('winnerchickendinner.mp3');
+      } else if (_winner == 'O') {
+        scoreP2++;
+        player.play('winnerchickendinner.mp3');
+      }
+      return; // Stop further processing if there's a winner
+    }
+
+    // Check for a tie
+    if (!_board.any((row) => row.any((cell) => cell == ''))) {
+      _gameOver = true;
+      _winner = "It's a Tie";
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.info,
+        animType: AnimType.rightSlide,
+        btnOkText: 'Play Again',
+        title: "It's a Tie",
+        btnOkOnPress: () {
+          _resetGame();
+        },
+      ).show();
       return;
     }
-    final player = AudioCache();
-    player.play('comedy_pop_finger_in_mouth_001.mp3');
-    setState(() {
-      _board[row][col] = _currentPlayer;
-      // check for winner
-      if (_board[row][0] == _currentPlayer &&
-          _board[row][1] == _currentPlayer &&
-          _board[row][2] == _currentPlayer) {
-        _winner = _currentPlayer;
-        _gameOver = true;
-      } else if (_board[0][col] == _currentPlayer &&
-          _board[1][col] == _currentPlayer &&
-          _board[2][col] == _currentPlayer) {
-        _winner = _currentPlayer;
-        _gameOver = true;
-      } else if (_board[0][0] == _currentPlayer &&
-          _board[1][1] == _currentPlayer &&
-          _board[2][2] == _currentPlayer) {
-        _winner = _currentPlayer;
-        _gameOver = true;
-      } else if (_board[0][2] == _currentPlayer &&
-          _board[1][1] == _currentPlayer &&
-          _board[2][0] == _currentPlayer) {
-        _winner = _currentPlayer;
-        _gameOver = true;
-      }
-      // switch player
-      _currentPlayer = _currentPlayer == 'X' ? 'O' : 'X';
 
-      // check for a tie
-      if (!_board.any((row) => row.any((cell) => cell == ''))) {
-        _gameOver = true;
-        _winner = "It's a Tie";
-      }
-      if (_winner != '') {
-        AwesomeDialog(
-          context: context,
-          dialogType: DialogType.success,
-          animType: AnimType.rightSlide,
-          btnOkText: 'Play Again',
-          title: _winner == 'X'
-              ? '${widget.nameP1} Won!'
-              : _winner == 'O'
-                  ? '${widget.nameP2} Won!'
-                  : "It's a Tie",
-          btnOkOnPress: () {
-            _resetGame();
-          },
-        ).show();
-        if (_winner == 'X') {
-          scoreP1++;
-          final player = AudioCache();
-          player.play('winnerchickendinner.mp3');
-        } else if (_winner == 'O') {
-          scoreP2++;
-          final player = AudioCache();
-          player.play('winnerchickendinner.mp3');
-        }
-      }
-    });
-  }
+    // Switch player
+    _currentPlayer = _currentPlayer == 'X' ? 'O' : 'X';
+  });
+}
 
   @override
   Widget build(BuildContext context) {
