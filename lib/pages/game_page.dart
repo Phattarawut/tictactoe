@@ -14,36 +14,15 @@ class GamePage extends StatefulWidget {
   State<GamePage> createState() => _GamePageState();
 }
 
-class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
+class _GamePageState extends State<GamePage> {
   int scoreP1 = 0;
   int scoreP2 = 0;
   
-  late AnimationController _pulseController;
-  late AnimationController _scaleController;
-  late Animation<double> _pulseAnimation;
-  late Animation<double> _scaleAnimation;
-  
-  var headerStyle = const TextStyle(
+  var miniFontStyle = const TextStyle(
     decoration: TextDecoration.none,
-    fontSize: 28,
+    fontSize: 25,
     color: Colors.white,
     fontFamily: 'FredokaOne',
-    fontWeight: FontWeight.bold,
-  );
-  
-  var scoreStyle = const TextStyle(
-    decoration: TextDecoration.none,
-    fontSize: 22,
-    color: Colors.white70,
-    fontFamily: 'FredokaOne',
-  );
-  
-  var turnStyle = const TextStyle(
-    decoration: TextDecoration.none,
-    fontSize: 24,
-    color: Colors.yellowAccent,
-    fontFamily: 'FredokaOne',
-    fontWeight: FontWeight.bold,
   );
 
   late List<List<String>> _board;
@@ -58,39 +37,6 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
     _currentPlayer = 'X';
     _winner = '';
     _gameOver = false;
-    
-    _pulseController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
-      vsync: this,
-    )..repeat(reverse: true);
-    
-    _scaleController = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
-    );
-    
-    _pulseAnimation = Tween<double>(
-      begin: 0.95,
-      end: 1.05,
-    ).animate(CurvedAnimation(
-      parent: _pulseController,
-      curve: Curves.easeInOut,
-    ));
-    
-    _scaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.9,
-    ).animate(CurvedAnimation(
-      parent: _scaleController,
-      curve: Curves.elasticOut,
-    ));
-  }
-
-  @override
-  void dispose() {
-    _pulseController.dispose();
-    _scaleController.dispose();
-    super.dispose();
   }
 
   // Reset Game
@@ -109,10 +55,6 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
     if (_board[row][col] != '' || _gameOver) {
       return;
     }
-
-    _scaleController.forward().then((_) {
-      _scaleController.reverse();
-    });
 
     final player = AudioCache();
     player.play('comedy_pop_finger_in_mouth_001.mp3');
@@ -179,10 +121,12 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
             colors: [
               Color(0xFF1A1A2E),
               Color(0xFF16213E),
@@ -191,363 +135,193 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
           ),
         ),
         child: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  
-                  // Header Section with Player Info
-                  Container(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                // Header Section
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFF00D4FF),
-                          Color(0xFF091E3A),
-                        ],
-                      ),
+                      color: Colors.deepOrangeAccent,
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.cyan.withOpacity(0.3),
-                          blurRadius: 15,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
                     ),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         // Player Names
                         Row(
                           children: [
                             Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                                decoration: BoxDecoration(
-                                  color: _currentPlayer == 'X' 
-                                    ? Colors.red.withOpacity(0.2)
-                                    : Colors.white.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: _currentPlayer == 'X'
-                                    ? Border.all(color: Colors.red, width: 2)
-                                    : Border.all(color: Colors.white24),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      widget.nameP1,
-                                      textAlign: TextAlign.center,
-                                      style: headerStyle.copyWith(
-                                        color: _currentPlayer == 'X' ? Colors.red : Colors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    Text(
-                                      'Score: $scoreP1',
-                                      textAlign: TextAlign.center,
-                                      style: scoreStyle,
-                                    ),
-                                  ],
-                                ),
+                              child: Text(
+                                widget.nameP1,
+                                textAlign: TextAlign.center,
+                                style: miniFontStyle,
                               ),
                             ),
-                            const SizedBox(width: 16),
-                            AnimatedBuilder(
-                              animation: _pulseAnimation,
-                              builder: (context, child) {
-                                return Transform.scale(
-                                  scale: _pulseAnimation.value,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      color: Colors.yellowAccent,
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.yellowAccent.withOpacity(0.5),
-                                          blurRadius: 10,
-                                          spreadRadius: 2,
-                                        ),
-                                      ],
-                                    ),
-                                    child: Text(
-                                      'VS',
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                        fontFamily: 'FredokaOne',
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                            const SizedBox(width: 16),
                             Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                                decoration: BoxDecoration(
-                                  color: _currentPlayer == 'O' 
-                                    ? Colors.blue.withOpacity(0.2)
-                                    : Colors.white.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: _currentPlayer == 'O'
-                                    ? Border.all(color: Colors.blue, width: 2)
-                                    : Border.all(color: Colors.white24),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      widget.nameP2,
-                                      textAlign: TextAlign.center,
-                                      style: headerStyle.copyWith(
-                                        color: _currentPlayer == 'O' ? Colors.blue : Colors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    Text(
-                                      'Score: $scoreP2',
-                                      textAlign: TextAlign.center,
-                                      style: scoreStyle,
-                                    ),
-                                  ],
-                                ),
+                              child: Text(
+                                widget.nameP2,
+                                textAlign: TextAlign.center,
+                                style: miniFontStyle,
                               ),
                             ),
                           ],
                         ),
-                        
-                        const SizedBox(height: 20),
-                        
-                        // Current Turn
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.yellowAccent.withOpacity(0.2),
-                                Colors.orange.withOpacity(0.2),
-                              ],
+                        // Scores
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Score : $scoreP1',
+                                textAlign: TextAlign.center,
+                                style: miniFontStyle,
+                              ),
                             ),
-                            borderRadius: BorderRadius.circular(25),
-                            border: Border.all(color: Colors.yellowAccent, width: 1),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.play_arrow_rounded,
-                                color: Colors.yellowAccent,
-                                size: 24,
+                            Expanded(
+                              child: Text(
+                                'Score : $scoreP2',
+                                textAlign: TextAlign.center,
+                                style: miniFontStyle,
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Turn: ',
-                                style: turnStyle.copyWith(fontSize: 20),
-                              ),
-                              Text(
-                                _currentPlayer == 'X'
-                                    ? "${widget.nameP1} ($_currentPlayer)"
-                                    : "${widget.nameP2} ($_currentPlayer)",
-                                style: turnStyle.copyWith(
-                                  fontSize: 20,
-                                  color: _currentPlayer == 'X' ? Colors.red : Colors.blue,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
+                        ),
+                        // Current Turn
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Turn : ',
+                              style: miniFontStyle,
+                            ),
+                            Text(
+                              _currentPlayer == 'X'
+                                  ? "${widget.nameP1} ($_currentPlayer)"
+                                  : "${widget.nameP2} ($_currentPlayer)",
+                              style: miniFontStyle,
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                  
-                  const SizedBox(height: 30),
-                  
-                  // Game Board
-                  AnimatedBuilder(
-                    animation: _scaleAnimation,
-                    builder: (context, child) {
-                      return Transform.scale(
-                        scale: _scaleAnimation.value,
-                        child: Container(
-                          height: 350,
-                          width: 350,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Color(0xFF2D4A75),
-                                Color(0xFF1A1A2E),
-                              ],
+                ),
+                
+                const SizedBox(height: 20),
+                
+                // Game Board - Full Screen
+                Expanded(
+                  flex: 5,
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.black12,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: const EdgeInsets.all(8),
+                    child: GridView.builder(
+                      itemCount: 9,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 8,
+                        mainAxisSpacing: 8,
+                      ),
+                      itemBuilder: (context, index) {
+                        int row = index ~/ 3;
+                        int col = index % 3;
+                        return GestureDetector(
+                          onTap: () => _makeMove(row, col),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
-                                blurRadius: 20,
-                                offset: const Offset(0, 10),
-                              ),
-                            ],
-                          ),
-                          padding: const EdgeInsets.all(8),
-                          child: GridView.builder(
-                            itemCount: 9,
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              crossAxisSpacing: 8,
-                              mainAxisSpacing: 8,
-                            ),
-                            itemBuilder: (context, index) {
-                              int row = index ~/ 3;
-                              int col = index % 3;
-                              bool isEmpty = _board[row][col] == '';
-                              
-                              return GestureDetector(
-                                onTap: () => _makeMove(row, col),
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  decoration: BoxDecoration(
-                                    gradient: isEmpty 
-                                      ? LinearGradient(
-                                          colors: [
-                                            Colors.white.withOpacity(0.9),
-                                            Colors.grey.withOpacity(0.3),
-                                          ],
-                                        )
-                                      : LinearGradient(
-                                          colors: [
-                                            _board[row][col] == 'X' 
-                                              ? Colors.red.withOpacity(0.8)
-                                              : Colors.blue.withOpacity(0.8),
-                                            Colors.white.withOpacity(0.9),
-                                          ],
-                                        ),
-                                    borderRadius: BorderRadius.circular(15),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: isEmpty 
-                                          ? Colors.white.withOpacity(0.3)
-                                          : (_board[row][col] == 'X' 
-                                              ? Colors.red.withOpacity(0.4)
-                                              : Colors.blue.withOpacity(0.4)),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 4),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Center(
-                                    child: AnimatedDefaultTextStyle(
-                                      duration: const Duration(milliseconds: 300),
-                                      style: TextStyle(
-                                        fontSize: isEmpty ? 0 : 80,
-                                        fontFamily: 'FredokaOne',
-                                        fontWeight: FontWeight.bold,
-                                        color: _board[row][col] == 'X'
-                                            ? Colors.white
-                                            : Colors.white,
-                                        shadows: [
-                                          Shadow(
-                                            color: _board[row][col] == 'X' 
-                                              ? Colors.red.withOpacity(0.8)
-                                              : Colors.blue.withOpacity(0.8),
-                                            blurRadius: 10,
-                                            offset: const Offset(2, 2),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Text(_board[row][col]),
-                                    ),
-                                  ),
+                            child: Center(
+                              child: Text(
+                                _board[row][col],
+                                style: TextStyle(
+                                  fontSize: 80,
+                                  fontFamily: 'FredokaOne',
+                                  color: _board[row][col] == 'X'
+                                      ? Colors.red
+                                      : Colors.black,
                                 ),
-                              );
-                            },
+                              ),
+                            ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
-                  
-                  const SizedBox(height: 30),
-                  
-                  // Action Buttons
-                  Row(
+                ),
+                
+                const SizedBox(height: 20),
+                
+                // Buttons Section
+                Expanded(
+                  flex: 1,
+                  child: Column(
                     children: [
-                      // Back Button
-                      Expanded(
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 8),
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const EnterNamePage()),
-                              );
-                              final player = AudioCache();
-                              player.play('comedy_pop_finger_in_mouth_001.mp3');
-                            },
-                            icon: const Icon(Icons.arrow_back_rounded, size: 24),
-                            label: const Text(
-                              'Back',
-                              style: TextStyle(
-                                fontSize: 18, 
-                                fontFamily: 'FredokaOne',
-                                fontWeight: FontWeight.bold,
-                              ),
+                      // Reset Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _resetGame,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            padding: const EdgeInsets.symmetric(vertical: 18),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              backgroundColor: Colors.grey[700],
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              elevation: 8,
-                            ),
+                          ),
+                          child: Text(
+                            'Reset Game',
+                            style: miniFontStyle,
                           ),
                         ),
                       ),
                       
-                      // Reset Button
-                      Expanded(
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 8),
-                          child: ElevatedButton.icon(
-                            onPressed: _resetGame,
-                            icon: const Icon(Icons.refresh_rounded, size: 24),
-                            label: const Text(
-                              'Reset',
-                              style: TextStyle(
-                                fontSize: 18, 
-                                fontFamily: 'FredokaOne',
-                                fontWeight: FontWeight.bold,
-                              ),
+                      const SizedBox(height: 10),
+                      
+                      // Back Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const EnterNamePage()),
+                            );
+                            final player = AudioCache();
+                            player.play('comedy_pop_finger_in_mouth_001.mp3');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey[700],
+                            padding: const EdgeInsets.symmetric(vertical: 18),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              backgroundColor: Colors.deepOrange,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              elevation: 8,
-                              shadowColor: Colors.deepOrange.withOpacity(0.5),
+                          ),
+                          child: const Text(
+                            '<--- Back',
+                            style: TextStyle(
+                              fontSize: 20, 
+                              fontFamily: 'FredokaOne',
+                              color: Colors.white,
                             ),
                           ),
                         ),
                       ),
                     ],
                   ),
-                  
-                  const SizedBox(height: 20),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
